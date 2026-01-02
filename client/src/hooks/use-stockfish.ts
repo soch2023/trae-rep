@@ -67,8 +67,19 @@ export function useStockfish() {
     return new Promise((resolve) => {
       if (!workerRef.current) return resolve('');
 
-      const depth = difficulty === 0 ? 5 : difficulty === 1 ? 10 : 18;
-      const moveTime = difficulty === 0 ? 500 : difficulty === 1 ? 1000 : 2000;
+      // Map 6 levels to Stockfish parameters
+      // Level 0: ~800 ELO (Depth 2, 100ms)
+      // Level 1: ~1200 ELO (Depth 5, 300ms)
+      // Level 2: ~1600 ELO (Depth 8, 600ms)
+      // Level 3: ~2000 ELO (Depth 12, 1000ms)
+      // Level 4: ~2400 ELO (Depth 15, 1500ms)
+      // Level 5: ~2800 ELO (Depth 20, 3000ms)
+      
+      const depths = [2, 5, 8, 12, 15, 20];
+      const times = [100, 300, 600, 1000, 1500, 3000];
+      
+      const depth = depths[difficulty] ?? 10;
+      const moveTime = times[difficulty] ?? 1000;
 
       const handler = (event: MessageEvent) => {
         if (typeof event.data === 'string' && event.data.startsWith('bestmove')) {

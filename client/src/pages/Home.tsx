@@ -11,6 +11,15 @@ import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw, Cpu, Users, Sword } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+const DIFFICULTY_LEVELS = [
+  { value: "0", label: "新手 (ELO ~800)", depth: 2 },
+  { value: "1", label: "入门 (ELO ~1200)", depth: 5 },
+  { value: "2", label: "业余 (ELO ~1600)", depth: 8 },
+  { value: "3", label: "专业 (ELO ~2000)", depth: 12 },
+  { value: "4", label: "大师 (ELO ~2400)", depth: 15 },
+  { value: "5", label: "宗师 (ELO ~2800)", depth: 20 },
+];
+
 export default function Home() {
   // Game State
   const [game, setGame] = useState(new Chess());
@@ -194,9 +203,9 @@ export default function Home() {
                            <SelectValue />
                          </SelectTrigger>
                          <SelectContent>
-                           <SelectItem value="0">菜鸟</SelectItem>
-                           <SelectItem value="1">高手</SelectItem>
-                           <SelectItem value="2">大师</SelectItem>
+                           {DIFFICULTY_LEVELS.map(level => (
+                             <SelectItem key={level.value} value={level.value}>{level.label.split(' ')[0]}</SelectItem>
+                           ))}
                          </SelectContent>
                       </Select>
                     </div>
@@ -210,9 +219,9 @@ export default function Home() {
                            <SelectValue />
                          </SelectTrigger>
                          <SelectContent>
-                           <SelectItem value="0">菜鸟</SelectItem>
-                           <SelectItem value="1">高手</SelectItem>
-                           <SelectItem value="2">大师</SelectItem>
+                           {DIFFICULTY_LEVELS.map(level => (
+                             <SelectItem key={level.value} value={level.value}>{level.label.split(' ')[0]}</SelectItem>
+                           ))}
                          </SelectContent>
                       </Select>
                     </div>
@@ -257,9 +266,9 @@ export default function Home() {
                       <SelectValue placeholder="选择难度" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="0">菜鸟 (深度 5)</SelectItem>
-                      <SelectItem value="1">高手 (深度 10)</SelectItem>
-                      <SelectItem value="2">大师 (深度 18)</SelectItem>
+                      {DIFFICULTY_LEVELS.map(level => (
+                        <SelectItem key={level.value} value={level.value}>{level.label}</SelectItem>
+                      ))}
                     </SelectContent>
                  </Select>
               </div>
