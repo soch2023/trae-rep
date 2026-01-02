@@ -1,1 +1,1 @@
-Package size exceeded the configured limit of 150 MB.
+./stockfish-17.1-8e4d048.js

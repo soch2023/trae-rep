@@ -9,7 +9,7 @@ export function OpeningTree({ fen, onMoveSelect }: { fen: string, onMoveSelect: 
     return (
       <div className="flex items-center justify-center h-48 text-muted-foreground">
         <Loader2 className="w-6 h-6 animate-spin mr-2" />
-        Loading Explorer...
+        加载中...
       </div>
     );
   }
@@ -17,7 +17,7 @@ export function OpeningTree({ fen, onMoveSelect }: { fen: string, onMoveSelect: 
   if (error || !data) {
     return (
       <div className="p-4 text-center text-sm text-muted-foreground">
-        No master games found for this position.
+        未找到此局面的大师对局。
       </div>
     );
   }
@@ -27,8 +27,8 @@ export function OpeningTree({ fen, onMoveSelect }: { fen: string, onMoveSelect: 
   return (
     <div className="flex flex-col h-full bg-card/30 rounded-xl overflow-hidden">
       <div className="p-3 border-b border-white/5 bg-white/5 flex justify-between items-center">
-        <h3 className="text-sm font-semibold text-foreground">Opening Explorer</h3>
-        <span className="text-xs text-muted-foreground">{totalGames.toLocaleString()} Master Games</span>
+        <h3 className="text-sm font-semibold text-foreground">开局库</h3>
+        <span className="text-xs text-muted-foreground">{totalGames.toLocaleString()} 局大师对局</span>
       </div>
       
       <ScrollArea className="flex-1">

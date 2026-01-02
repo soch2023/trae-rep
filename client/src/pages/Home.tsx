@@ -141,10 +141,10 @@ export default function Home() {
           </div>
 
           <div className="flex gap-4 items-stretch h-[min(80vw,600px)] w-full max-w-[700px]">
-            {/* Eval Bar */}
+            {/* 评估条 (Eval Bar) */}
             <EvaluationBar cp={evaluation.cp} mate={evaluation.mate} />
             
-            {/* Board */}
+            {/* 棋盘 (Board) */}
             <div className="aspect-square flex-1 board-wrapper rounded-lg overflow-hidden border-4 border-card bg-card shadow-2xl">
               <Chessboard 
                 position={fen} 
@@ -152,6 +152,7 @@ export default function Home() {
                 customDarkSquareStyle={{ backgroundColor: "#779556" }}
                 customLightSquareStyle={{ backgroundColor: "#ebecd0" }}
                 animationDuration={200}
+                boardOrientation={game.turn() === 'b' && settings.toggleAIVSAI ? 'black' : 'white'}
               />
             </div>
           </div>
@@ -181,59 +182,59 @@ export default function Home() {
                   className={aiVsAiActive ? "bg-red-500/10 text-red-500 hover:bg-red-500/20" : "bg-green-500/10 text-green-500 hover:bg-green-500/20"}
                 >
                   {aiVsAiActive ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
-                  {aiVsAiActive ? "Pause Auto-Play" : "Start Auto-Play"}
+                  {aiVsAiActive ? "暂停演示" : "开始自战演示"}
                 </Button>
              ) : (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground px-4">
                    {settings.toggleVsAI ? <Cpu className="w-4 h-4" /> : <Users className="w-4 h-4" />}
-                   <span>{settings.toggleVsAI ? "Playing vs Engine" : "Local Analysis"}</span>
+                   <span>{settings.toggleVsAI ? "人机对弈中" : "本地分析模式"}</span>
                 </div>
              )}
 
-             <Button variant="secondary" onClick={resetGame}>New Game</Button>
+             <Button variant="secondary" onClick={resetGame}>重新开始</Button>
           </div>
         </div>
 
         {/* RIGHT: Analysis & Stats Panel */}
         <div className="w-full lg:w-[400px] bg-card border-l border-white/5 flex flex-col h-full z-10">
           
-          {/* Active Mode Header */}
+          {/* 活跃模式标题 */}
           <div className="p-6 border-b border-white/5 bg-gradient-to-r from-card to-secondary/30">
             <h2 className="text-lg font-bold flex items-center gap-2">
               <Sword className="w-5 h-5 text-primary" />
-              {settings.toggleAIVSAI ? "Engine Match" : settings.toggleVsAI ? "Human vs Engine" : "Analysis Board"}
+              {settings.toggleAIVSAI ? "引擎对局演示" : settings.toggleVsAI ? "人机对练" : "本地分析"}
             </h2>
             
             {settings.toggleVsAI && (
               <div className="mt-4">
-                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Engine Strength</label>
+                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">引擎难度</label>
                  <Select 
                    value={settings.aiDifficulty.toString()} 
                    onValueChange={(v) => updateSettings({ ...settings, aiDifficulty: parseInt(v) })}
                  >
                     <SelectTrigger className="w-full bg-background border-white/10">
-                      <SelectValue placeholder="Select Difficulty" />
+                      <SelectValue placeholder="选择难度" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="0">Beginner (Depth 5)</SelectItem>
-                      <SelectItem value="1">Intermediate (Depth 10)</SelectItem>
-                      <SelectItem value="2">Grandmaster (Depth 18)</SelectItem>
+                      <SelectItem value="0">菜鸟 (深度 5)</SelectItem>
+                      <SelectItem value="1">高手 (深度 10)</SelectItem>
+                      <SelectItem value="2">大师 (深度 18)</SelectItem>
                     </SelectContent>
                  </Select>
               </div>
             )}
           </div>
 
-          {/* Engine Info */}
+          {/* 引擎信息 */}
           <div className="p-4 grid grid-cols-2 gap-4 border-b border-white/5">
              <div className="bg-background/50 p-3 rounded-lg border border-white/5">
-                <span className="text-xs text-muted-foreground block mb-1">Evaluation</span>
+                <span className="text-xs text-muted-foreground block mb-1">局势评估</span>
                 <span className={`font-mono font-bold text-lg ${evaluation.cp > 0 ? "text-green-500" : "text-red-500"}`}>
                    {evaluation.cp > 0 ? "+" : ""}{(evaluation.cp / 100).toFixed(2)}
                 </span>
              </div>
              <div className="bg-background/50 p-3 rounded-lg border border-white/5">
-                <span className="text-xs text-muted-foreground block mb-1">Best Move</span>
+                <span className="text-xs text-muted-foreground block mb-1">引擎推荐</span>
                 <span className="font-mono font-bold text-lg text-primary">
                    {evaluation.bestMove || "-"}
                 </span>
@@ -245,9 +246,9 @@ export default function Home() {
             <OpeningTree fen={fen} onMoveSelect={(san) => safeMove(san)} />
           </div>
 
-          {/* Move History */}
+          {/* 历史记录 */}
           <div className="h-48 border-t border-white/5 p-4 bg-background/30 overflow-y-auto">
-             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Move History</h3>
+             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">着法记录</h3>
              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm font-mono">
                 {moveHistory.map((move, i) => {
                   if (i % 2 === 0) {

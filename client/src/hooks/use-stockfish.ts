@@ -18,19 +18,18 @@ export function useStockfish() {
     workerRef.current = worker;
 
     worker.onmessage = (event) => {
-      const message = event.data;
+      const message = typeof event.data === 'string' ? event.data : '';
+      if (!message) return;
       
       if (message === 'readyok') {
         setIsReady(true);
       }
 
-      // Parse UCI info output
-      // Example: "info depth 10 seldepth 14 multipv 1 score cp 45 nodes 12345 nps 54321 hashfull 0 tbhits 0 time 123 pv e2e4 e7e5"
       if (message.startsWith('info') && message.includes('score')) {
         const cpMatch = message.match(/score cp (-?\d+)/);
         const mateMatch = message.match(/score mate (-?\d+)/);
         const depthMatch = message.match(/depth (\d+)/);
-        const pvMatch = message.match(/ pv ([a-h1-8]{4})/); // Best move is usually first in PV
+        const pvMatch = message.match(/ pv ([a-h1-8]{4})/);
 
         setEvaluation(prev => ({
           ...prev,
@@ -41,7 +40,6 @@ export function useStockfish() {
         }));
       }
       
-      // Best move final decision
       if (message.startsWith('bestmove')) {
         const bestMove = message.split(' ')[1];
         setEvaluation(prev => ({ ...prev, bestMove }));
@@ -67,12 +65,11 @@ export function useStockfish() {
     return new Promise((resolve) => {
       if (!workerRef.current) return resolve('');
 
-      // Adjust strength based on difficulty (0-2)
       const depth = difficulty === 0 ? 5 : difficulty === 1 ? 10 : 18;
       const moveTime = difficulty === 0 ? 500 : difficulty === 1 ? 1000 : 2000;
 
       const handler = (event: MessageEvent) => {
-        if (event.data.startsWith('bestmove')) {
+        if (typeof event.data === 'string' && event.data.startsWith('bestmove')) {
           workerRef.current?.removeEventListener('message', handler);
           resolve(event.data.split(' ')[1]);
         }
@@ -82,7 +79,6 @@ export function useStockfish() {
       
       workerRef.current.postMessage('stop');
       workerRef.current.postMessage(`position fen ${fen}`);
-      // Use time limit for faster response in game
       workerRef.current.postMessage(`go movetime ${moveTime} depth ${depth}`);
     });
   }, []);

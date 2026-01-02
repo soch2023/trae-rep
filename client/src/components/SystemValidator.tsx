@@ -54,17 +54,21 @@ export function SystemValidator({ isStockfishReady, onValidationComplete }: Syst
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-primary">
             <Loader2 className="w-5 h-5 animate-spin" />
-            System Self-Validation
+            系统自检与初始化
           </DialogTitle>
           <DialogDescription>
-             Running integrity checks and initializing modules...
+             正在检查核心模块完整性并初始化引擎...
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3 py-4">
           {checks.map(check => (
             <div key={check.id} className="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/5">
-              <span className="text-sm font-medium">{check.label}</span>
+              <span className="text-sm font-medium">{
+                check.id === 'engine' ? '国际象棋引擎 (Stockfish)' :
+                check.id === 'render' ? '图形渲染引擎' :
+                check.id === 'network' ? '网络连接状态' : '游戏核心模块'
+              }</span>
               {check.status === 'pending' && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
               {check.status === 'success' && <CheckCircle2 className="w-4 h-4 text-green-500" />}
               {check.status === 'warning' && <AlertTriangle className="w-4 h-4 text-yellow-500" />}

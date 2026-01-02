@@ -44,23 +44,23 @@ export function Header() {
 
       <div className="flex items-center gap-4 w-full md:w-auto justify-end">
         {/* Global Toggles */}
-        <div className="flex items-center gap-2 bg-secondary/50 p-1.5 rounded-full border border-white/5">
+          <div className="flex items-center gap-2 bg-secondary/50 p-1.5 rounded-full border border-white/5">
           <ToggleBtn 
             active={settings.toggleLocalTwoPlayer} 
             onClick={() => handleToggle('toggleLocalTwoPlayer')}
-            label="Local"
+            label="本地对战"
             icon={<Settings className="w-3 h-3" />}
           />
           <ToggleBtn 
             active={settings.toggleVsAI} 
             onClick={() => handleToggle('toggleVsAI')}
-            label="Vs AI"
+            label="人机对战"
             icon={<BarChart2 className="w-3 h-3" />}
           />
           <ToggleBtn 
             active={settings.toggleAIVSAI} 
             onClick={() => handleToggle('toggleAIVSAI')}
-            label="AI vs AI"
+            label="机器自战"
             icon={<BookOpen className="w-3 h-3" />}
           />
         </div>
