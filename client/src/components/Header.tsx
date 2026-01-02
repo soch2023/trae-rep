@@ -35,20 +35,20 @@ export function Header() {
 
         {/* Mobile Navigation */}
         <nav className="md:hidden flex items-center gap-4 text-sm font-medium text-muted-foreground">
-          <Link href="/" className={location === "/" ? "text-primary" : ""}>Play</Link>
-          <Link href="/features" className={location === "/features" ? "text-primary" : ""}>Features</Link>
+          <Link href="/" className={location === "/" ? "text-primary" : ""}>对弈</Link>
+          <Link href="/features" className={location === "/features" ? "text-primary" : ""}>特性</Link>
         </nav>
       </div>
 
       <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
         <Link href="/" className={`hover:text-primary transition-colors ${location === "/" ? "text-primary" : ""}`}>
-          Play
+          在线对弈
         </Link>
         <Link href="/tutorial" className={`hover:text-primary transition-colors ${location === "/tutorial" ? "text-primary" : ""}`}>
-          Tutorial
+          教学说明
         </Link>
         <Link href="/features" className={`hover:text-primary transition-colors ${location === "/features" ? "text-primary" : ""}`}>
-          Features
+          核心特性
         </Link>
       </nav>
 
