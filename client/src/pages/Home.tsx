@@ -48,7 +48,12 @@ export default function Home() {
       const makeAiMove = async () => {
         // Small delay for visuals
         await new Promise(r => setTimeout(r, 500));
-        const bestMove = await getBestMove(game.fen(), 2); // 大师级 (深度 18)
+        const currentTurn = game.turn();
+        const difficulty = currentTurn === 'w' 
+          ? (settings.whiteAIDifficulty ?? 1) 
+          : (settings.blackAIDifficulty ?? 2);
+        
+        const bestMove = await getBestMove(game.fen(), difficulty);
         safeMove(bestMove);
       };
       makeAiMove();
@@ -177,7 +182,41 @@ export default function Home() {
              <div className="h-8 w-px bg-white/10 mx-2" />
 
              {settings.toggleAIVSAI ? (
-                <div className="flex flex-col items-center gap-1">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="flex gap-4 mb-2">
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold">白方 (AI)</span>
+                      <Select 
+                        value={(settings.whiteAIDifficulty ?? 1).toString()} 
+                        onValueChange={(v) => updateSettings({ ...settings, whiteAIDifficulty: parseInt(v) })}
+                      >
+                         <SelectTrigger className="h-7 w-24 bg-background text-[10px]">
+                           <SelectValue />
+                         </SelectTrigger>
+                         <SelectContent>
+                           <SelectItem value="0">菜鸟</SelectItem>
+                           <SelectItem value="1">高手</SelectItem>
+                           <SelectItem value="2">大师</SelectItem>
+                         </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold">黑方 (AI)</span>
+                      <Select 
+                        value={(settings.blackAIDifficulty ?? 2).toString()} 
+                        onValueChange={(v) => updateSettings({ ...settings, blackAIDifficulty: parseInt(v) })}
+                      >
+                         <SelectTrigger className="h-7 w-24 bg-background text-[10px]">
+                           <SelectValue />
+                         </SelectTrigger>
+                         <SelectContent>
+                           <SelectItem value="0">菜鸟</SelectItem>
+                           <SelectItem value="1">高手</SelectItem>
+                           <SelectItem value="2">大师</SelectItem>
+                         </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                   <Button 
                     onClick={() => setAiVsAiActive(!aiVsAiActive)}
                     className={aiVsAiActive ? "bg-red-500/10 text-red-500 hover:bg-red-500/20" : "bg-green-500/10 text-green-500 hover:bg-green-500/20"}
@@ -185,7 +224,6 @@ export default function Home() {
                     {aiVsAiActive ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
                     {aiVsAiActive ? "暂停演示" : "开始自战演示"}
                   </Button>
-                  <span className="text-[10px] text-muted-foreground font-mono">大师级 (深度 18)</span>
                 </div>
              ) : (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground px-4">

@@ -38,6 +38,8 @@ export function useSettings() {
         toggleAIVSAI: true,
         aiDifficulty: 1, // 0: Beginner, 1: Intermediate, 2: Master
         boardOrientation: 'white',
+        whiteAIDifficulty: 1,
+        blackAIDifficulty: 2,
       };
     },
   });
@@ -73,6 +75,8 @@ export function useSettings() {
       toggleAIVSAI: true,
       aiDifficulty: 1,
       boardOrientation: 'white',
+      whiteAIDifficulty: 1,
+      blackAIDifficulty: 2,
     },
     isLoading: query.isLoading,
     updateSettings: mutation.mutate,

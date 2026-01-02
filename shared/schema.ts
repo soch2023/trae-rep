@@ -11,6 +11,9 @@ export const userSettings = pgTable("user_settings", {
     toggleVsAI: boolean;
     toggleAIVSAI: boolean;
     aiDifficulty: number;
+    boardOrientation?: 'white' | 'black';
+    whiteAIDifficulty?: number;
+    blackAIDifficulty?: number;
   }>().notNull(),
 });
 
