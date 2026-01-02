@@ -21,6 +21,8 @@ export function useStockfish() {
       const message = typeof event.data === 'string' ? event.data : '';
       if (!message) return;
       
+      console.log('Stockfish:', message);
+
       if (message === 'readyok') {
         setIsReady(true);
       }

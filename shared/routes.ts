@@ -2,6 +2,9 @@
 import { z } from 'zod';
 import { insertUserSettingsSchema, userSettings } from './schema';
 
+export type UserSettings = typeof userSettings.$inferSelect;
+export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;
+
 export const api = {
   settings: {
     get: {

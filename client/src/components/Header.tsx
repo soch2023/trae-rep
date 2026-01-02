@@ -7,10 +7,13 @@ export function Header() {
   const { settings, updateSettings } = useSettings();
 
   const handleToggle = (key: keyof typeof settings) => {
-    updateSettings({
-      ...settings,
-      [key]: !settings[key as boolean],
-    });
+    const currentVal = settings[key];
+    if (typeof currentVal === 'boolean') {
+      updateSettings({
+        ...settings,
+        [key]: !currentVal,
+      });
+    }
   };
 
   return (
