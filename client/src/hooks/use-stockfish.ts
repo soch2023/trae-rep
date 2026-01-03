@@ -68,15 +68,15 @@ export function useStockfish() {
       if (!workerRef.current) return resolve('');
 
       // Map 6 levels to Stockfish parameters
-      // Level 0: ~800 ELO (Depth 2, 100ms)
-      // Level 1: ~1200 ELO (Depth 5, 300ms)
-      // Level 2: ~1600 ELO (Depth 8, 600ms)
-      // Level 3: ~2000 ELO (Depth 12, 1000ms)
-      // Level 4: ~2400 ELO (Depth 15, 1500ms)
-      // Level 5: ~2800 ELO (Depth 20, 3000ms)
+      // Level 0: ~800 ELO (Depth 2, 100ms) - Novice
+      // Level 1: ~1200 ELO (Depth 4, 200ms) - Beginner
+      // Level 2: ~1600 ELO (Depth 8, 500ms) - Amateur
+      // Level 3: ~2000 ELO (Depth 12, 1000ms) - Professional
+      // Level 4: ~2400 ELO (Depth 18, 2000ms) - Master
+      // Level 5: ~2800 ELO (Depth 24, 4000ms) - Grandmaster
       
-      const depths = [2, 5, 8, 12, 15, 20];
-      const times = [100, 300, 600, 1000, 1500, 3000];
+      const depths = [2, 4, 8, 12, 18, 24];
+      const times = [100, 200, 500, 1000, 2000, 4000];
       
       const depth = depths[difficulty] ?? 10;
       const moveTime = times[difficulty] ?? 1000;

@@ -154,20 +154,22 @@ export default function Home() {
              </div>
           </div>
 
-          <div className="flex gap-2 lg:gap-4 items-stretch h-auto w-full max-w-[min(90vw,600px)] aspect-square lg:aspect-auto lg:h-[min(80vw,600px)] touch-none overscroll-none">
+          <div className="flex gap-2 lg:gap-4 items-stretch h-auto w-full max-w-[min(90vw,600px)] aspect-square lg:aspect-auto lg:h-[min(80vw,600px)] touch-none overscroll-none py-1">
             {/* 评估条 (Eval Bar) */}
             <EvaluationBar cp={evaluation.cp} mate={evaluation.mate} />
             
             {/* 棋盘 (Board) */}
-            <div className="aspect-square flex-1 board-wrapper rounded-lg overflow-hidden border-2 lg:border-4 border-card bg-card shadow-2xl relative select-none">
-              <Chessboard 
-                position={fen} 
-                onPieceDrop={onDrop}
-                customDarkSquareStyle={{ backgroundColor: "#779556" }}
-                customLightSquareStyle={{ backgroundColor: "#ebecd0" }}
-                animationDuration={200}
-                boardOrientation={settings.boardOrientation || 'white'}
-              />
+            <div className="aspect-square flex-1 board-wrapper rounded-lg overflow-hidden border-2 lg:border-4 border-card bg-card shadow-2xl relative select-none flex items-center justify-center">
+              <div className="w-full h-full p-[1%]">
+                <Chessboard 
+                  position={fen} 
+                  onPieceDrop={onDrop}
+                  customDarkSquareStyle={{ backgroundColor: "#779556" }}
+                  customLightSquareStyle={{ backgroundColor: "#ebecd0" }}
+                  animationDuration={200}
+                  boardOrientation={settings.boardOrientation || 'white'}
+                />
+              </div>
             </div>
           </div>
 
