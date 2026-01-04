@@ -51,19 +51,25 @@ export default function Home() {
   }, [game]);
 
   // AI Logic
+  const isPlayerTurn = settings.gameMode === 'vsAI' 
+    ? game.turn() === (settings.boardOrientation === 'white' ? 'w' : 'b')
+    : true;
+
   useEffect(() => {
     // 1. AI vs AI Mode
     if (settings.gameMode === 'aiVsAi' && aiVsAiActive && !game.isGameOver()) {
       const makeAiMove = async () => {
         // Small delay for visuals
         await new Promise(r => setTimeout(r, 500));
+        if (!aiVsAiActive) return; // Check if still active after delay
+        
         const currentTurn = game.turn();
         const difficulty = currentTurn === 'w' 
           ? (settings.whiteAIDifficulty ?? 1) 
           : (settings.blackAIDifficulty ?? 2);
         
         const bestMove = await getBestMove(game.fen(), difficulty);
-        safeMove(bestMove);
+        if (bestMove) safeMove(bestMove);
       };
       makeAiMove();
     } 
@@ -72,12 +78,12 @@ export default function Home() {
       if (!isPlayerTurn) {
         const makeAiMove = async () => {
           const bestMove = await getBestMove(game.fen(), settings.aiDifficulty);
-          if (bestMove && game.moves().includes(bestMove)) safeMove(bestMove);
+          if (bestMove) safeMove(bestMove);
         };
         makeAiMove();
       }
     }
-  }, [fen, settings, aiVsAiActive]);
+  }, [fen, settings.gameMode, settings.aiDifficulty, settings.whiteAIDifficulty, settings.blackAIDifficulty, settings.boardOrientation, aiVsAiActive, isPlayerTurn]);
 
   function safeMove(move: string | { from: string; to: string; promotion?: string }) {
     try {
@@ -151,10 +157,6 @@ export default function Home() {
     setAiVsAiActive(false);
   }
 
-  const isPlayerTurn = settings.gameMode === 'vsAI' 
-    ? game.turn() === (settings.boardOrientation === 'white' ? 'w' : 'b')
-    : true;
-
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-body">
       {!validated && <SystemValidator isStockfishReady={isReady} onValidationComplete={() => setValidated(true)} />}
@@ -198,7 +200,7 @@ export default function Home() {
           <div className="mt-8 flex items-center gap-4 bg-card/50 p-2 rounded-2xl border border-white/5 backdrop-blur-sm">
              <Button 
                 variant="ghost" 
-                size="icon" 
+                className="flex gap-2"
                 onClick={() => {
                   const newGame = new Chess(game.fen());
                   newGame.undo();
@@ -209,6 +211,7 @@ export default function Home() {
                 disabled={aiVsAiActive || moveHistory.length === 0}
              >
                 <RotateCcw className="w-5 h-5" />
+                <span className="hidden sm:inline">悔棋回退</span>
              </Button>
 
              <div className="h-8 w-px bg-white/10 mx-2" />
@@ -295,7 +298,23 @@ export default function Home() {
             {settings.gameMode === 'vsAI' && (
               <div className="mt-4 space-y-4">
                  <div>
-                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">玩家执色</label>
+                   <div className="flex items-center justify-between mb-2">
+                     <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider block">玩家执色</label>
+                     <Button 
+                       variant="outline" 
+                       size="sm" 
+                       className="h-7 text-[10px] px-2"
+                       onClick={() => {
+                         const currentOrientation = settings.boardOrientation;
+                         updateSettings({ 
+                           ...settings, 
+                           boardOrientation: currentOrientation === 'white' ? 'black' : 'white' 
+                         });
+                       }}
+                     >
+                       交换角色
+                     </Button>
+                   </div>
                    <div className="flex gap-2 p-1 bg-background/50 rounded-lg border border-white/10">
                      <Button 
                        variant={settings.boardOrientation === 'white' ? 'default' : 'ghost'} 
