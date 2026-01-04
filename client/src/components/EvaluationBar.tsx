@@ -21,7 +21,7 @@ export function EvaluationBar({ cp, mate }: EvaluationBarProps) {
   percent = Math.max(5, Math.min(95, percent));
 
   return (
-    <div className="h-full w-6 bg-secondary/50 rounded-md overflow-hidden flex flex-col relative border border-white/5">
+    <div className="h-full w-4 lg:w-6 bg-secondary/50 rounded-md overflow-hidden flex flex-col relative border border-white/5">
       {/* Black's portion */}
       <div 
         className="w-full bg-zinc-800 transition-all duration-500 ease-in-out"

@@ -127,12 +127,12 @@ export default function Home() {
   }
 
   function resetGame() {
+    stop();
     const newGame = new Chess();
     setGame(newGame);
     setFen(newGame.fen());
     setMoveHistory([]);
     setAiVsAiActive(false);
-    stop();
   }
 
   return (
@@ -147,29 +147,29 @@ export default function Home() {
         <div className="w-full lg:flex-1 flex flex-col items-center justify-center p-4 lg:p-8 bg-gradient-to-b from-background to-secondary/20 relative min-h-[500px] lg:min-h-0">
           
           {/* Status Indicators */}
-          <div className="absolute top-4 left-4 lg:left-8 flex gap-4">
+          <div className="absolute top-4 left-4 lg:left-8 flex gap-4 z-20">
              <div className="flex items-center gap-2 px-4 py-2 bg-card rounded-full border border-white/5 text-[10px] lg:text-xs font-mono">
                <div className={`w-2 h-2 rounded-full ${isReady ? 'bg-green-500' : 'bg-red-500 animate-pulse'}`} />
                STOCKFISH 10
              </div>
           </div>
 
-          <div className="flex gap-2 lg:gap-4 items-stretch h-auto w-full max-w-[min(90vw,600px)] aspect-square lg:aspect-auto lg:h-[min(80vw,600px)] touch-none overscroll-none py-1">
+          <div className="flex gap-2 lg:gap-4 items-stretch h-auto w-full max-w-[600px] aspect-square touch-none overscroll-none py-1">
             {/* 评估条 (Eval Bar) */}
-            <EvaluationBar cp={evaluation.cp} mate={evaluation.mate} />
+            <div className="h-full py-[1%]">
+              <EvaluationBar cp={evaluation.cp} mate={evaluation.mate} />
+            </div>
             
             {/* 棋盘 (Board) */}
-            <div className="aspect-square flex-1 board-wrapper rounded-lg overflow-hidden border-2 lg:border-4 border-card bg-card shadow-2xl relative select-none flex items-center justify-center">
-              <div className="w-full h-full p-[1%]">
-                <Chessboard 
-                  position={fen} 
-                  onPieceDrop={onDrop}
-                  customDarkSquareStyle={{ backgroundColor: "#779556" }}
-                  customLightSquareStyle={{ backgroundColor: "#ebecd0" }}
-                  animationDuration={200}
-                  boardOrientation={settings.boardOrientation || 'white'}
-                />
-              </div>
+            <div className="aspect-square flex-1 board-wrapper rounded-lg overflow-hidden border-2 lg:border-4 border-card bg-card shadow-2xl relative select-none p-[2%]">
+              <Chessboard 
+                position={fen} 
+                onPieceDrop={onDrop}
+                customDarkSquareStyle={{ backgroundColor: "#779556" }}
+                customLightSquareStyle={{ backgroundColor: "#ebecd0" }}
+                animationDuration={0}
+                boardOrientation={settings.boardOrientation || 'white'}
+              />
             </div>
           </div>
 
