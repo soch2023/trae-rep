@@ -56,34 +56,23 @@ export function Header() {
         {/* Global Toggles */}
         <div className="flex items-center gap-2 bg-secondary/50 p-1.5 rounded-full border border-white/5">
           <ToggleBtn 
-            active={settings.toggleLocalTwoPlayer} 
-            onClick={() => handleToggle('toggleLocalTwoPlayer')}
+            active={settings.gameMode === 'local'} 
+            onClick={() => updateSettings({ ...settings, gameMode: 'local' })}
             label="本地对战"
             icon={<Settings className="w-3 h-3" />}
           />
           <ToggleBtn 
-            active={settings.toggleVsAI} 
-            onClick={() => handleToggle('toggleVsAI')}
+            active={settings.gameMode === 'vsAI'} 
+            onClick={() => updateSettings({ ...settings, gameMode: 'vsAI' })}
             label="人机对战"
             icon={<BarChart2 className="w-3 h-3" />}
           />
           <ToggleBtn 
-            active={settings.toggleAIVSAI} 
-            onClick={() => handleToggle('toggleAIVSAI')}
+            active={settings.gameMode === 'aiVsAi'} 
+            onClick={() => updateSettings({ ...settings, gameMode: 'aiVsAi' })}
             label="机器自战"
             icon={<BookOpen className="w-3 h-3" />}
           />
-          
-          <div className="w-px h-6 bg-white/10 mx-1" />
-          
-          <button
-            onClick={toggleOrientation}
-            className="px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 bg-transparent text-muted-foreground hover:text-foreground hover:bg-white/5"
-            title="翻转棋盘"
-          >
-            <RotateCw className="w-3 h-3" />
-            翻转
-          </button>
         </div>
       </div>
     </header>

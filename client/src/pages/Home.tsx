@@ -53,7 +53,7 @@ export default function Home() {
   // AI Logic
   useEffect(() => {
     // 1. AI vs AI Mode
-    if (settings.toggleAIVSAI && aiVsAiActive && !game.isGameOver()) {
+    if (settings.gameMode === 'aiVsAi' && aiVsAiActive && !game.isGameOver()) {
       const makeAiMove = async () => {
         // Small delay for visuals
         await new Promise(r => setTimeout(r, 500));
@@ -68,7 +68,7 @@ export default function Home() {
       makeAiMove();
     } 
     // 2. Player vs AI Mode (If it's AI's turn)
-    else if (settings.toggleVsAI && !settings.toggleAIVSAI && !game.isGameOver()) {
+    else if (settings.gameMode === 'vsAI' && !game.isGameOver()) {
       const isPlayerTurn = game.turn() === 'w'; // Assuming Player is White
       if (!isPlayerTurn) {
         const makeAiMove = async () => {
@@ -102,7 +102,7 @@ export default function Home() {
     if (aiVsAiActive) return false;
 
     // Block if it's AI's turn in PvAI mode
-    if (settings.toggleVsAI && !settings.toggleAIVSAI && game.turn() === 'b') return false;
+    if (settings.gameMode === 'vsAI' && game.turn() === 'b') return false;
 
     try {
       const move = {
@@ -192,7 +192,7 @@ export default function Home() {
 
              <div className="h-8 w-px bg-white/10 mx-2" />
 
-             {settings.toggleAIVSAI ? (
+             {settings.gameMode === 'aiVsAi' ? (
                 <div className="flex flex-col items-center gap-2">
                   <div className="flex gap-4 mb-2">
                     <div className="flex flex-col items-center gap-1">
@@ -237,9 +237,23 @@ export default function Home() {
                   </Button>
                 </div>
              ) : (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground px-4">
-                   {settings.toggleVsAI ? <Cpu className="w-4 h-4" /> : <Users className="w-4 h-4" />}
-                   <span>{settings.toggleVsAI ? "人机对弈中" : "本地分析模式"}</span>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground px-4">
+                     {settings.gameMode === 'vsAI' ? <Cpu className="w-4 h-4" /> : <Users className="w-4 h-4" />}
+                     <span>{settings.gameMode === 'vsAI' ? "人机对弈中" : "本地对战模式"}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => updateSettings({
+                      ...settings,
+                      boardOrientation: settings.boardOrientation === 'white' ? 'black' : 'white'
+                    })}
+                    title="翻转棋盘"
+                    className="hover-elevate"
+                  >
+                    <RotateCw className="w-5 h-5" />
+                  </Button>
                 </div>
              )}
 
@@ -254,10 +268,10 @@ export default function Home() {
           <div className="p-6 border-b border-white/5 bg-gradient-to-r from-card to-secondary/30">
             <h2 className="text-lg font-bold flex items-center gap-2">
               <Sword className="w-5 h-5 text-primary" />
-              {settings.toggleAIVSAI ? "引擎对局演示" : settings.toggleVsAI ? "人机对练" : "本地分析"}
+              {settings.gameMode === 'aiVsAi' ? "引擎对局演示" : settings.gameMode === 'vsAI' ? "人机对练" : "本地双人对战"}
             </h2>
             
-            {settings.toggleVsAI && (
+            {settings.gameMode === 'vsAI' && (
               <div className="mt-4">
                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">引擎难度</label>
                  <Select 

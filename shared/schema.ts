@@ -7,9 +7,7 @@ export const userSettings = pgTable("user_settings", {
   id: serial("id").primaryKey(),
   sessionId: text("session_id").notNull().unique(),
   preferences: jsonb("preferences").$type<{
-    toggleLocalTwoPlayer: boolean;
-    toggleVsAI: boolean;
-    toggleAIVSAI: boolean;
+    gameMode: 'local' | 'vsAI' | 'aiVsAi';
     aiDifficulty: number;
     boardOrientation?: 'white' | 'black';
     whiteAIDifficulty?: number;

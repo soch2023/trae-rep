@@ -33,19 +33,19 @@ export function useSettings() {
       
       // Default settings
       return {
-        toggleLocalTwoPlayer: true,
-        toggleVsAI: true,
-        toggleAIVSAI: true,
-        aiDifficulty: 1, // 0: Beginner, 1: Intermediate, 2: Master
-        boardOrientation: 'white',
-        whiteAIDifficulty: 1,
-        blackAIDifficulty: 2,
+        preferences: {
+          gameMode: 'local',
+          aiDifficulty: 1,
+          boardOrientation: 'white',
+          whiteAIDifficulty: 1,
+          blackAIDifficulty: 2,
+        }
       };
     },
   });
 
   const mutation = useMutation({
-    mutationFn: async (newSettings: Omit<InsertUserSettings, "sessionId">) => {
+    mutationFn: async (newSettings: any) => {
       const payload = {
         sessionId: SESSION_ID,
         preferences: newSettings,
@@ -70,9 +70,7 @@ export function useSettings() {
 
   return {
     settings: query.data?.preferences || {
-      toggleLocalTwoPlayer: true,
-      toggleVsAI: true,
-      toggleAIVSAI: true,
+      gameMode: 'local',
       aiDifficulty: 1,
       boardOrientation: 'white',
       whiteAIDifficulty: 1,
