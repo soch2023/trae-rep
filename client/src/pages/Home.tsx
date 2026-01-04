@@ -69,11 +69,10 @@ export default function Home() {
     } 
     // 2. Player vs AI Mode (If it's AI's turn)
     else if (settings.gameMode === 'vsAI' && !game.isGameOver()) {
-      const isPlayerTurn = game.turn() === (settings.boardOrientation === 'white' ? 'w' : 'b');
       if (!isPlayerTurn) {
         const makeAiMove = async () => {
           const bestMove = await getBestMove(game.fen(), settings.aiDifficulty);
-          if (bestMove) safeMove(bestMove);
+          if (bestMove && game.moves().includes(bestMove)) safeMove(bestMove);
         };
         makeAiMove();
       }
@@ -135,6 +134,10 @@ export default function Home() {
     setAiVsAiActive(false);
   }
 
+  const isPlayerTurn = settings.gameMode === 'vsAI' 
+    ? game.turn() === (settings.boardOrientation === 'white' ? 'w' : 'b')
+    : true;
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-body">
       {!validated && <SystemValidator isStockfishReady={isReady} onValidationComplete={() => setValidated(true)} />}
@@ -160,17 +163,18 @@ export default function Home() {
               <EvaluationBar cp={evaluation.cp} mate={evaluation.mate} />
             </div>
             
-            {/* 棋盘 (Board) */}
-            <div className="aspect-square flex-1 board-wrapper rounded-lg overflow-hidden border-2 lg:border-4 border-card bg-card shadow-2xl relative select-none p-[2%]">
-              <Chessboard 
-                position={fen} 
-                onPieceDrop={onDrop}
-                customDarkSquareStyle={{ backgroundColor: "#779556" }}
-                customLightSquareStyle={{ backgroundColor: "#ebecd0" }}
-                animationDuration={0}
-                boardOrientation={settings.boardOrientation || 'white'}
-              />
-            </div>
+      {/* 棋盘 (Board) */}
+      <div className="aspect-square flex-1 board-wrapper rounded-lg overflow-hidden border-2 lg:border-4 border-card bg-card shadow-2xl relative select-none p-1">
+        <Chessboard 
+          position={fen} 
+          onPieceDrop={onDrop}
+          customDarkSquareStyle={{ backgroundColor: "#779556" }}
+          customLightSquareStyle={{ backgroundColor: "#ebecd0" }}
+          animationDuration={0}
+          boardOrientation={settings.boardOrientation || 'white'}
+          areArrowsAllowed={false}
+        />
+      </div>
           </div>
 
           {/* Game Controls Panel */}
