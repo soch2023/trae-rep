@@ -69,11 +69,11 @@ export default function Home() {
     } 
     // 2. Player vs AI Mode (If it's AI's turn)
     else if (settings.gameMode === 'vsAI' && !game.isGameOver()) {
-      const isPlayerTurn = game.turn() === 'w'; // Assuming Player is White
+      const isPlayerTurn = game.turn() === (settings.boardOrientation === 'white' ? 'w' : 'b');
       if (!isPlayerTurn) {
         const makeAiMove = async () => {
           const bestMove = await getBestMove(game.fen(), settings.aiDifficulty);
-          safeMove(bestMove);
+          if (bestMove) safeMove(bestMove);
         };
         makeAiMove();
       }
