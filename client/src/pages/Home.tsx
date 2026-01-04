@@ -8,7 +8,7 @@ import { SystemValidator } from "@/components/SystemValidator";
 import { useStockfish } from "@/hooks/use-stockfish";
 import { useSettings } from "@/hooks/use-settings";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, RotateCcw, Cpu, Users, Sword } from "lucide-react";
+import { Play, Pause, RotateCcw, Cpu, Users, Sword, RotateCw } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const DIFFICULTY_LEVELS = [
