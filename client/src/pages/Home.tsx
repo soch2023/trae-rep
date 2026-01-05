@@ -53,15 +53,15 @@ export default function Home() {
   // AI Logic
   const isPlayerTurn = settings.gameMode === 'vsAI' 
     ? game.turn() === settings.playerColor
-    : false; // In other modes, it's never "AI's turn" to move automatically unless aiVsAiActive
+    : false;
 
   useEffect(() => {
     // 1. AI vs AI Mode
     if (settings.gameMode === 'aiVsAi' && aiVsAiActive && !game.isGameOver()) {
       const makeAiMove = async () => {
-        // Small delay for visuals
         await new Promise(r => setTimeout(r, 500));
-        if (!aiVsAiActive || settings.gameMode !== 'aiVsAi') return; 
+        // 确保模式和活动状态未改变
+        if (!aiVsAiActive || settings.gameMode !== 'aiVsAi' || game.isGameOver()) return; 
         
         const currentTurn = game.turn();
         const difficulty = currentTurn === 'w' 
@@ -69,22 +69,28 @@ export default function Home() {
           : (settings.blackAIDifficulty ?? 2);
         
         const bestMove = await getBestMove(game.fen(), difficulty);
-        if (bestMove && settings.gameMode === 'aiVsAi' && aiVsAiActive) safeMove(bestMove);
+        if (bestMove && settings.gameMode === 'aiVsAi' && aiVsAiActive) {
+          safeMove(bestMove);
+        }
       };
       makeAiMove();
     } 
-    // 2. Player vs AI Mode (If it's AI's turn)
-    else if (settings.gameMode === 'vsAI' && !game.isGameOver()) {
-      // isPlayerTurn being false means it's AI's turn
-      if (!isPlayerTurn) {
-        const makeAiMove = async () => {
-          await new Promise(r => setTimeout(r, 500));
-          if (settings.gameMode !== 'vsAI') return;
-          const bestMove = await getBestMove(game.fen(), settings.aiDifficulty);
-          if (bestMove && settings.gameMode === 'vsAI') safeMove(bestMove);
-        };
-        makeAiMove();
-      }
+    // 2. Player vs AI Mode
+    else if (settings.gameMode === 'vsAI' && !game.isGameOver() && !isPlayerTurn) {
+      const makeAiMove = async () => {
+        await new Promise(r => setTimeout(r, 600)); // 稍长一点的延迟，给悔棋留足制动时间
+        
+        // 关键防护：确保现在依然是AI回合，且模式没变
+        if (settings.gameMode !== 'vsAI' || game.turn() === settings.playerColor || game.isGameOver()) return;
+        
+        const bestMove = await getBestMove(game.fen(), settings.aiDifficulty);
+        
+        // 再次检查局面，防止计算期间发生了悔棋
+        if (bestMove && settings.gameMode === 'vsAI' && game.turn() !== settings.playerColor) {
+          safeMove(bestMove);
+        }
+      };
+      makeAiMove();
     }
   }, [fen, settings.gameMode, settings.aiDifficulty, settings.whiteAIDifficulty, settings.blackAIDifficulty, settings.playerColor, aiVsAiActive, isPlayerTurn]);
 
@@ -92,26 +98,20 @@ export default function Home() {
     try {
       setGame(prev => {
         const next = new Chess(prev.fen());
-        // For string moves (UCI from Stockfish), we need to validate and potentially handle promotion
+        // For string moves (UCI from Stockfish), we need to handle it
         let moveResult;
         if (typeof move === 'string' && move.length >= 4) {
           const from = move.slice(0, 2);
           const to = move.slice(2, 4);
-          const promotion = move.length === 5 ? move[4] : undefined;
-          
-          // Verify if it's a legal move
-          const legalMoves = next.moves({ verbose: true });
-          const isLegal = legalMoves.some(m => m.from === from && m.to === to);
-          
-          if (isLegal) {
-            moveResult = next.move({ from, to, promotion: promotion || 'q' });
-          }
+          const promotion = move.length === 5 ? move[4] : 'q';
+          moveResult = next.move({ from, to, promotion });
         } else {
           moveResult = next.move(move);
         }
 
         if (moveResult) {
-          setFen(next.fen());
+          const newFen = next.fen();
+          setFen(newFen);
           setMoveHistory(h => [...h, moveResult.san]);
           return next;
         }
@@ -123,25 +123,17 @@ export default function Home() {
   }
 
   function onDrop(sourceSquare: string, targetSquare: string) {
-    // Block moves if AI vs AI is running
     if (aiVsAiActive) return false;
-
-    // Block if it's AI's turn in PvAI mode
     if (settings.gameMode === 'vsAI' && game.turn() !== settings.playerColor) return false;
 
     try {
-      const move = {
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: "q", // always promote to queen for simplicity
-      };
-
-      const tempGame = new Chess(game.fen());
-      const result = tempGame.move(move);
+      const move = { from: sourceSquare, to: targetSquare, promotion: "q" };
+      const next = new Chess(game.fen());
+      const result = next.move(move);
 
       if (result) {
-        setGame(tempGame);
-        setFen(tempGame.fen());
+        setGame(next);
+        setFen(next.fen());
         setMoveHistory(h => [...h, result.san]);
         return true;
       }
@@ -220,23 +212,24 @@ export default function Home() {
                 variant="ghost" 
                 className="flex gap-2"
                 onClick={() => {
-                  stop(); // Stop any pending AI calculations immediately
+                  stop(); // 停止AI计算
                   
-                  const moves = game.history();
-                  if (moves.length === 0) return;
+                  // 使用 moveHistory 作为可靠的历史记录来源
+                  if (moveHistory.length === 0) return;
                   
-                  // Reconstruct the game state up to the penultimate move
+                  const history = [...moveHistory];
+                  history.pop(); // 移除最后一步
+                  
                   const newGame = new Chess();
-                  moves.pop(); // Remove the last move
-                  for (const move of moves) {
+                  // 重新推演除最后一步外的所有招法
+                  for (const move of history) {
                     newGame.move(move);
                   }
                   
-                  // Update all relevant state simultaneously to avoid race conditions
                   const newFen = newGame.fen();
                   setGame(newGame);
                   setFen(newFen);
-                  setMoveHistory(h => h.slice(0, -1));
+                  setMoveHistory(history);
                 }}
                 disabled={aiVsAiActive || moveHistory.length === 0}
              >
