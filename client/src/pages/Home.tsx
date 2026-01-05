@@ -53,7 +53,7 @@ export default function Home() {
   // AI Logic
   const isPlayerTurn = settings.gameMode === 'vsAI' 
     ? game.turn() === settings.playerColor
-    : true;
+    : false; // In other modes, it's never "AI's turn" to move automatically unless aiVsAiActive
 
   useEffect(() => {
     // 1. AI vs AI Mode
@@ -61,7 +61,7 @@ export default function Home() {
       const makeAiMove = async () => {
         // Small delay for visuals
         await new Promise(r => setTimeout(r, 500));
-        if (!aiVsAiActive) return; // Check if still active after delay
+        if (!aiVsAiActive || settings.gameMode !== 'aiVsAi') return; 
         
         const currentTurn = game.turn();
         const difficulty = currentTurn === 'w' 
@@ -69,16 +69,19 @@ export default function Home() {
           : (settings.blackAIDifficulty ?? 2);
         
         const bestMove = await getBestMove(game.fen(), difficulty);
-        if (bestMove) safeMove(bestMove);
+        if (bestMove && settings.gameMode === 'aiVsAi' && aiVsAiActive) safeMove(bestMove);
       };
       makeAiMove();
     } 
     // 2. Player vs AI Mode (If it's AI's turn)
     else if (settings.gameMode === 'vsAI' && !game.isGameOver()) {
+      // isPlayerTurn being false means it's AI's turn
       if (!isPlayerTurn) {
         const makeAiMove = async () => {
+          await new Promise(r => setTimeout(r, 500));
+          if (settings.gameMode !== 'vsAI') return;
           const bestMove = await getBestMove(game.fen(), settings.aiDifficulty);
-          if (bestMove) safeMove(bestMove);
+          if (bestMove && settings.gameMode === 'vsAI') safeMove(bestMove);
         };
         makeAiMove();
       }
@@ -217,21 +220,23 @@ export default function Home() {
                 variant="ghost" 
                 className="flex gap-2"
                 onClick={() => {
+                  stop(); // Stop any pending AI calculations immediately
+                  
                   const moves = game.history();
                   if (moves.length === 0) return;
                   
-                  // Simple undo one move
+                  // Reconstruct the game state up to the penultimate move
                   const newGame = new Chess();
-                  moves.pop();
+                  moves.pop(); // Remove the last move
                   for (const move of moves) {
                     newGame.move(move);
                   }
                   
-                  const finalFen = newGame.fen();
+                  // Update all relevant state simultaneously to avoid race conditions
+                  const newFen = newGame.fen();
                   setGame(newGame);
-                  setFen(finalFen);
+                  setFen(newFen);
                   setMoveHistory(h => h.slice(0, -1));
-                  stop();
                 }}
                 disabled={aiVsAiActive || moveHistory.length === 0}
              >
