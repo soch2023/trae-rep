@@ -27,13 +27,13 @@ export class DatabaseStorage implements IStorage {
     if (existing) {
       const [updated] = await db
         .update(userSettings)
-        .set(settings)
+        .set(settings as any)
         .where(eq(userSettings.sessionId, settings.sessionId))
         .returning();
       return updated;
     }
     
-    const [created] = await db.insert(userSettings).values(settings).returning();
+    const [created] = await db.insert(userSettings).values(settings as any).returning();
     return created;
   }
 }
