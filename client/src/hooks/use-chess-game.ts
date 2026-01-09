@@ -184,8 +184,8 @@ export function useChessGame() {
 
         if (moveResult) {
           const newFen = next.fen();
-          // 使用 setTimeout 确保 FEN 更新在下一帧触发，避免渲染竞争
-          setTimeout(() => setFen(newFen), 0);
+          // 直接同步更新FEN和历史，避免异步问题
+          setFen(newFen);
           setMoveHistory(h => [...h, moveResult.san]);
           return next;
         }
@@ -353,7 +353,7 @@ export function useChessGame() {
   const saveGame = useCallback(() => {
     try {
       const gameData = {
-        fen: fen,
+        fen: board.fen(),
         moveHistory: moveHistory,
         timestamp: Date.now()
       };
@@ -368,7 +368,7 @@ export function useChessGame() {
       });
       return false;
     }
-  }, [fen, moveHistory, addError]);
+  }, [board, moveHistory, addError]);
 
   // 从本地存储加载游戏状态
   const loadGame = useCallback(() => {
@@ -385,7 +385,7 @@ export function useChessGame() {
       
       setBoard(newGame);
       setFen(gameData.fen);
-      setMoveHistory(gameData.moveHistory);
+      setMoveHistory(gameData.moveHistory || []);
       stop();
       clearErrors();
       return true;

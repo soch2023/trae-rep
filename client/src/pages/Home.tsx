@@ -95,14 +95,14 @@ export default function Home() {
                </div>
             </div>
 
-          <div className="flex gap-2 lg:gap-4 items-stretch h-auto w-full max-w-[600px] aspect-square touch-none overscroll-none py-1">
+          <div className="flex gap-2 lg:gap-4 items-stretch h-auto w-full max-w-[600px] aspect-square touch-none overscroll-none p-1">
             {/* 评估条 (Eval Bar) */}
             <div className="h-full py-[1%] hidden sm:block">
               <EvaluationBar cp={evaluation.cp} mate={evaluation.mate} />
             </div>
             
       {/* 棋盘 (Board) */}
-      <div className="aspect-square flex-1 board-wrapper rounded-lg overflow-hidden border-2 lg:border-4 border-card bg-card shadow-2xl relative select-none p-1">
+      <div className="aspect-square flex-1 board-wrapper rounded-lg overflow-hidden border-2 lg:border-4 border-card bg-card shadow-2xl relative select-none">
         <Chessboard 
           position={gameState.fen} 
           onPieceDrop={onDrop}
@@ -111,7 +111,7 @@ export default function Home() {
           animationDuration={0}
           boardOrientation={settings.boardOrientation || 'white'}
           areArrowsAllowed={false}
-          boardWidth={Math.min(window.innerWidth - 32, 600)}
+          boardWidth={Math.min(document.documentElement.clientWidth * 0.9, 600)}
         />
       </div>
           </div>
